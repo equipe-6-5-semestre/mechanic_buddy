@@ -5,21 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "mecanicos_app",
-            "cwd": "mecanicos_app",
+            "name": "mechanic_buddy",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "mecanicos_app (profile mode)",
-            "cwd": "mecanicos_app",
+            "name": "mechanic_buddy (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "mecanicos_app (release mode)",
-            "cwd": "mecanicos_app",
+            "name": "mechanic_buddy (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
