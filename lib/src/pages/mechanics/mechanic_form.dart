@@ -17,7 +17,18 @@ class _MechanicFormState extends State<MechanicForm> {
   late String _name;
   late String _phone;
   late String _specialization;
+  List<String> _vehicleTypes = [];
+  late int _experience;
+  late String _city;
   late DatabaseHelper _dbHelper;
+
+  final List<String> _allVehicleTypes = [
+    'Carro',
+    'Moto',
+    'Caminhão',
+    'Van',
+    'Caminhonete'
+  ];
 
   @override
   void initState() {
@@ -27,10 +38,16 @@ class _MechanicFormState extends State<MechanicForm> {
       _name = widget.mechanic!.name;
       _phone = widget.mechanic!.phone;
       _specialization = widget.mechanic!.specialization;
+      _vehicleTypes = widget.mechanic!.vehicleTypes;
+      _experience = widget.mechanic!.experience;
+      _city = widget.mechanic!.city;
     } else {
       _name = '';
       _phone = '';
       _specialization = '';
+      _vehicleTypes = [];
+      _experience = 0;
+      _city = '';
     }
   }
 
@@ -44,7 +61,7 @@ class _MechanicFormState extends State<MechanicForm> {
         padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
               TextFormField(
                 initialValue: _name,
@@ -85,6 +102,52 @@ class _MechanicFormState extends State<MechanicForm> {
                   _specialization = value!;
                 },
               ),
+              Text(
+                'Vehicle Types',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              ..._allVehicleTypes.map((type) {
+                return CheckboxListTile(
+                  title: Text(type),
+                  value: _vehicleTypes.contains(type),
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        _vehicleTypes.add(type);
+                      } else {
+                        _vehicleTypes.remove(type);
+                      }
+                    });
+                  },
+                );
+              }).toList(),
+              TextFormField(
+                initialValue: _experience.toString(),
+                decoration: InputDecoration(labelText: 'Experience (Years)'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter experience';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _experience = int.parse(value!);
+                },
+              ),
+              TextFormField(
+                initialValue: _city,
+                decoration: InputDecoration(labelText: 'City'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter city';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _city = value!;
+                },
+              ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
@@ -96,6 +159,9 @@ class _MechanicFormState extends State<MechanicForm> {
                           name: _name,
                           phone: _phone,
                           specialization: _specialization,
+                          vehicleTypes: _vehicleTypes,
+                          experience: _experience,
+                          city: _city,
                           userId: widget.userId,
                         ),
                       );
@@ -106,6 +172,9 @@ class _MechanicFormState extends State<MechanicForm> {
                           name: _name,
                           phone: _phone,
                           specialization: _specialization,
+                          vehicleTypes: _vehicleTypes,
+                          experience: _experience,
+                          city: _city,
                           userId: widget.userId,
                         ),
                       );

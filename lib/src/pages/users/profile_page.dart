@@ -4,6 +4,7 @@ import '../../../db/database_helper.dart';
 import '../mechanics/mechanic.dart';
 import 'user.dart';
 import '../mechanic_services/service_form.dart';
+import 'login_page.dart';  // Importe a página de login para redirecionar após o logout
 
 class ProfilePage extends StatefulWidget {
   final User user;
@@ -33,6 +34,14 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  void _logout(BuildContext context) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()), 
+      (Route<dynamic> route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Mechanic?>(
@@ -46,6 +55,12 @@ class _ProfilePageState extends State<ProfilePage> {
           return Scaffold(
             appBar: AppBar(
               title: Text('Profile'),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.logout),
+                  onPressed: () => _logout(context),
+                ),
+              ],
             ),
             body: Padding(
               padding: EdgeInsets.all(16.0),

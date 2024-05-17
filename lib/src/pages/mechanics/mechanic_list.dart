@@ -21,18 +21,32 @@ class _MechanicListState extends State<MechanicList> {
   late Future<List<Mechanic>> _mechanicList;
   late Future<Mechanic?> _userMechanic;
   int _selectedIndex = 0;
+  String _selectedVehicleType = 'Todos';
+
+  final List<String> _vehicleTypes = [
+    'Todos',
+    'Carro',
+    'Moto',
+    'Caminhão',
+    'Van',
+    'Caminhonete',
+  ];
 
   @override
   void initState() {
     super.initState();
     _dbHelper = DatabaseHelper();
-    _mechanicList = _dbHelper.getAllMechanics();
+    _mechanicList = _dbHelper.getMechanics(widget.user.id!);
     _userMechanic = _dbHelper.getUserMechanic(widget.user.id!);
   }
 
   void _refreshList() {
     setState(() {
-      _mechanicList = _dbHelper.getAllMechanics();
+      if (_selectedVehicleType == 'Todos') {
+        _mechanicList = _dbHelper.getMechanics(widget.user.id!);
+      } else {
+        _mechanicList = _dbHelper.getMechanicsByVehicleType(widget.user.id!, _selectedVehicleType);
+      }
       _userMechanic = _dbHelper.getUserMechanic(widget.user.id!);
     });
   }
@@ -46,7 +60,26 @@ class _MechanicListState extends State<MechanicList> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _pages = <Widget>[
-      _buildMechanicList(),
+      Column(
+        children: [
+          DropdownButton<String>(
+            value: _selectedVehicleType,
+            items: _vehicleTypes.map((String type) {
+              return DropdownMenuItem<String>(
+                value: type,
+                child: Text(type),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedVehicleType = newValue!;
+                _refreshList();
+              });
+            },
+          ),
+          Expanded(child: _buildMechanicList()),
+        ],
+      ),
       ProfilePage(user: widget.user),
       ServicesPage(userId: widget.user.id!),
     ];
@@ -77,7 +110,7 @@ class _MechanicListState extends State<MechanicList> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return SizedBox.shrink();
                 } else if (snapshot.hasData) {
-                  return SizedBox.shrink(); // Hide the button if a mechanic is already registered
+                  return SizedBox.shrink();
                 } else {
                   return FloatingActionButton(
                     onPressed: () async {
@@ -117,7 +150,8 @@ class _MechanicListState extends State<MechanicList> {
               Mechanic mechanic = snapshot.data![index];
               return ListTile(
                 title: Text(mechanic.name),
-                subtitle: Text(mechanic.specialization),
+                subtitle: Text('${mechanic.specialization}\nVehicle Types: ${mechanic.vehicleTypes.join(', ')}'),
+                isThreeLine: true,
                 onTap: () {
                   Navigator.push(
                     context,

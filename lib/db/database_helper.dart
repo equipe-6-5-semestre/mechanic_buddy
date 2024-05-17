@@ -21,7 +21,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'mechanics.db');
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
     );
   }
@@ -40,6 +40,9 @@ class DatabaseHelper {
         name TEXT,
         phone TEXT,
         specialization TEXT,
+        vehicle_types TEXT,
+        experience INTEGER,
+        city TEXT,
         user_id INTEGER,
         FOREIGN KEY(user_id) REFERENCES users(id)
       )
@@ -77,6 +80,18 @@ class DatabaseHelper {
   Future<List<Mechanic>> getAllMechanics() async {
     Database db = await database;
     List<Map<String, dynamic>> maps = await db.query('mechanics');
+    return List.generate(maps.length, (i) {
+      return Mechanic.fromMap(maps[i]);
+    });
+  }
+
+  Future<List<Mechanic>> getMechanicsByVehicleType(int userId, String vehicleType) async {
+    Database db = await database;
+    List<Map<String, dynamic>> maps = await db.query(
+      'mechanics',
+      where: 'user_id = ? AND vehicle_types LIKE ?',
+      whereArgs: [userId, '%$vehicleType%'],
+    );
     return List.generate(maps.length, (i) {
       return Mechanic.fromMap(maps[i]);
     });

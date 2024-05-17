@@ -25,9 +25,7 @@ class _MechanicDetailsPageState extends State<MechanicDetailsPage> {
   }
 
   void _launchWhatsApp(String phone) async {
-    final phoneParsed = phone.replaceAll(RegExp(r'[ \-\(\)]'), '');
-    print('SAD' + phoneParsed);
-    final url = 'https://wa.me/$phoneParsed';
+    final url = 'https://wa.me/$phone';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -56,6 +54,9 @@ class _MechanicDetailsPageState extends State<MechanicDetailsPage> {
             Text('Name: ${widget.mechanic.name}'),
             Text('Phone: ${widget.mechanic.phone}'),
             Text('Specialization: ${widget.mechanic.specialization}'),
+            Text('Vehicle Types: ${widget.mechanic.vehicleTypes.join(', ')}'),
+            Text('Experience: ${widget.mechanic.experience} years'),
+            Text('City: ${widget.mechanic.city}'),
             SizedBox(height: 20),
             Text(
               'Services Offered',
