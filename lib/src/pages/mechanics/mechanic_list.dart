@@ -29,21 +29,14 @@ class _MechanicListState extends State<MechanicList> {
     _dbHelper = DatabaseHelper();
     _mechanicList = _dbHelper.getMechanics();
     _mechanics = [];
-    _refreshMechanicCount();
     _loadMechanics();
-  }
-
-  void _refreshMechanicCount() async {
-    List<Mechanic> mechanics = await _dbHelper.getMechanics();
-    setState(() {
-      _mechanicCount = mechanics.length;
-    });
   }
 
   void _loadMechanics() async {
     List<Mechanic> mechanics = await _dbHelper.getMechanics();
     setState(() {
       _mechanics = mechanics;
+      _mechanicCount = mechanics.length;
     });
   }
 
@@ -51,6 +44,9 @@ class _MechanicListState extends State<MechanicList> {
     setState(() {
       _selectedIndex = index;
     });
+    if (index == 0) {
+      _loadMechanics();
+    }
   }
 
   @override
