@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../db/database_helper.dart';
 import 'mechanic.dart';
-import 'mechanic_form.dart';
 import '../users/profile_page.dart';
 import '../mechanic_services/services_page.dart';
 import '../users/user.dart';
@@ -19,35 +18,32 @@ class MechanicList extends StatefulWidget {
 class _MechanicListState extends State<MechanicList> {
   late DatabaseHelper _dbHelper;
   late Future<List<Mechanic>> _mechanicList;
-  late Future<Mechanic?> _userMechanic;
+  late List<Mechanic> _mechanics;
+  String _searchQuery = '';
   int _selectedIndex = 0;
-  String _selectedVehicleType = 'Todos';
-
-  final List<String> _vehicleTypes = [
-    'Todos',
-    'Carro',
-    'Moto',
-    'Caminhão',
-    'Van',
-    'Caminhonete',
-  ];
+  int _mechanicCount = 0;
 
   @override
   void initState() {
     super.initState();
     _dbHelper = DatabaseHelper();
-    _mechanicList = _dbHelper.getMechanics(widget.user.id!);
-    _userMechanic = _dbHelper.getUserMechanic(widget.user.id!);
+    _mechanicList = _dbHelper.getMechanics();
+    _mechanics = [];
+    _refreshMechanicCount();
+    _loadMechanics();
   }
 
-  void _refreshList() {
+  void _refreshMechanicCount() async {
+    List<Mechanic> mechanics = await _dbHelper.getMechanics();
     setState(() {
-      if (_selectedVehicleType == 'Todos') {
-        _mechanicList = _dbHelper.getMechanics(widget.user.id!);
-      } else {
-        _mechanicList = _dbHelper.getMechanicsByVehicleType(widget.user.id!, _selectedVehicleType);
-      }
-      _userMechanic = _dbHelper.getUserMechanic(widget.user.id!);
+      _mechanicCount = mechanics.length;
+    });
+  }
+
+  void _loadMechanics() async {
+    List<Mechanic> mechanics = await _dbHelper.getMechanics();
+    setState(() {
+      _mechanics = mechanics;
     });
   }
 
@@ -62,21 +58,21 @@ class _MechanicListState extends State<MechanicList> {
     List<Widget> _pages = <Widget>[
       Column(
         children: [
-          DropdownButton<String>(
-            value: _selectedVehicleType,
-            items: _vehicleTypes.map((String type) {
-              return DropdownMenuItem<String>(
-                value: type,
-                child: Text(type),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedVehicleType = newValue!;
-                _refreshList();
-              });
-            },
-          ),
+          if (_mechanicCount > 0)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: 'Buscar',
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+              ),
+            ),
           Expanded(child: _buildMechanicList()),
         ],
       ),
@@ -86,50 +82,23 @@ class _MechanicListState extends State<MechanicList> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mechanics App'),
+        title: Text('Mechanic Buddy'),
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
-            label: 'Mechanics',
+            label: 'Mecânicos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
-            label: 'Profile',
+            label: 'Perfil',
           ),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-      floatingActionButton: _selectedIndex == 0
-          ? FutureBuilder<Mechanic?>(
-              future: _userMechanic,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SizedBox.shrink();
-                } else if (snapshot.hasData) {
-                  return SizedBox.shrink();
-                } else {
-                  return FloatingActionButton(
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MechanicForm(userId: widget.user.id!),
-                        ),
-                      );
-                      if (result == true) {
-                        _refreshList();
-                      }
-                    },
-                    child: Icon(Icons.add),
-                  );
-                }
-              },
-            )
-          : null,
     );
   }
 
@@ -142,15 +111,23 @@ class _MechanicListState extends State<MechanicList> {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No mechanics found'));
+          return Center(child: Text('Não foram encontrados mecânicos'));
         } else {
+          List<Mechanic> filteredMechanics = _mechanics.where((mechanic) {
+            return mechanic.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                   mechanic.phone.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                   mechanic.specialization.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                   mechanic.vehicleTypes.join(', ').toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                   mechanic.city.toLowerCase().contains(_searchQuery.toLowerCase());
+          }).toList();
+          
           return ListView.builder(
-            itemCount: snapshot.data!.length,
+            itemCount: filteredMechanics.length,
             itemBuilder: (context, index) {
-              Mechanic mechanic = snapshot.data![index];
+              Mechanic mechanic = filteredMechanics[index];
               return ListTile(
                 title: Text(mechanic.name),
-                subtitle: Text('${mechanic.specialization}\nVehicle Types: ${mechanic.vehicleTypes.join(', ')}'),
+                subtitle: Text('${mechanic.specialization}\nTipos de veículos: ${mechanic.vehicleTypes.join(', ')}'),
                 isThreeLine: true,
                 onTap: () {
                   Navigator.push(

@@ -65,12 +65,11 @@ class DatabaseHelper {
     return await db.insert('mechanics', mechanic.toMap());
   }
 
-  Future<List<Mechanic>> getMechanics(int userId) async {
+  Future<List<Mechanic>> getMechanics() async {
     Database db = await database;
     List<Map<String, dynamic>> maps = await db.query(
       'mechanics',
-      where: 'user_id = ?',
-      whereArgs: [userId],
+      orderBy: 'name',
     );
     return List.generate(maps.length, (i) {
       return Mechanic.fromMap(maps[i]);
@@ -85,12 +84,12 @@ class DatabaseHelper {
     });
   }
 
-  Future<List<Mechanic>> getMechanicsByVehicleType(int userId, String vehicleType) async {
+  Future<List<Mechanic>> getMechanicsByVehicleType(String vehicleType) async {
     Database db = await database;
     List<Map<String, dynamic>> maps = await db.query(
       'mechanics',
-      where: 'user_id = ? AND vehicle_types LIKE ?',
-      whereArgs: [userId, '%$vehicleType%'],
+      where: 'vehicle_types LIKE ?',
+      whereArgs: ['%$vehicleType%'],
     );
     return List.generate(maps.length, (i) {
       return Mechanic.fromMap(maps[i]);
@@ -109,7 +108,7 @@ class DatabaseHelper {
     }
     return null;
   }
-
+  
   Future<int> updateMechanic(Mechanic mechanic) async {
     Database db = await database;
     return await db.update(

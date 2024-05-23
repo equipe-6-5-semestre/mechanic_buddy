@@ -4,7 +4,8 @@ import '../../../db/database_helper.dart';
 import '../mechanics/mechanic.dart';
 import 'user.dart';
 import '../mechanic_services/service_form.dart';
-import 'login_page.dart';  // Importe a página de login para redirecionar após o logout
+import '../mechanics/mechanic_form.dart';
+import './login_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final User user;
@@ -18,12 +19,16 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late DatabaseHelper _dbHelper;
   late Future<Mechanic?> _userMechanic;
-  late Future<List<Service>> _serviceList;
+  Future<List<Service>>? _serviceList;
 
   @override
   void initState() {
     super.initState();
     _dbHelper = DatabaseHelper();
+    _loadUserMechanic();
+  }
+
+  void _loadUserMechanic() {
     _userMechanic = _dbHelper.getUserMechanic(widget.user.id!);
     _userMechanic.then((mechanic) {
       if (mechanic != null) {
@@ -35,10 +40,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _logout(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
+    Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()), 
-      (Route<dynamic> route) => false,
+      MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
 
@@ -50,11 +54,11 @@ class _ProfilePageState extends State<ProfilePage> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text('Erro: ${snapshot.error}'));
         } else {
           return Scaffold(
             appBar: AppBar(
-              title: Text('Profile'),
+              title: Text('Perfil'),
               actions: [
                 IconButton(
                   icon: Icon(Icons.logout),
@@ -68,7 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'User Information',
+                    'Informações do usuário',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
@@ -80,37 +84,62 @@ class _ProfilePageState extends State<ProfilePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Mechanic Information',
+                            'Informações do mecânico',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 10),
-                          Text('Name: ${snapshot.data!.name}'),
-                          Text('Phone: ${snapshot.data!.phone}'),
-                          Text('Specialization: ${snapshot.data!.specialization}'),
+                          Text('Nome: ${snapshot.data!.name}'),
+                          Text('Telefone: ${snapshot.data!.phone}'),
+                          Text('Especialização: ${snapshot.data!.specialization}'),
+                          Text('Tipos de veículos: ${snapshot.data!.vehicleTypes.join(', ')}'),
+                          Text('Anos de Experiência: ${snapshot.data!.experience}'),
+                          Text('Cidade: ${snapshot.data!.city}'),
                           SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () async {
-                              final result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ServiceForm(mechanicId: snapshot.data!.id!),
-                                ),
-                              );
-                              if (result == true) {
-                                setState(() {
-                                  _userMechanic =
-                                      _dbHelper.getUserMechanic(widget.user.id!);
-                                  _serviceList = _dbHelper.getServices(snapshot.data!.id!);
-                                });
-                              }
-                            },
-                            child: Text('Add Service'),
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ServiceForm(mechanicId: snapshot.data!.id!),
+                                    ),
+                                  );
+                                  if (result == true) {
+                                    setState(() {
+                                      _loadUserMechanic();
+                                    });
+                                  }
+                                },
+                                child: Text('Adicionar Serviço'),
+                              ),
+                              SizedBox(width: 10),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MechanicForm(
+                                        userId: widget.user.id!,
+                                        mechanic: snapshot.data!,
+                                      ),
+                                    ),
+                                  );
+                                  if (result == true) {
+                                    setState(() {
+                                      _loadUserMechanic();
+                                    });
+                                  }
+                                },
+                                child: Text('Atualizar Dados'),
+                              ),
+                            ],
                           ),
                           SizedBox(height: 20),
                           Text(
-                            'Services Offered',
+                            'Serviços oferecidos',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
@@ -123,10 +152,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                   return Center(child: CircularProgressIndicator());
                                 } else if (serviceSnapshot.hasError) {
                                   return Center(
-                                      child: Text('Error: ${serviceSnapshot.error}'));
+                                      child: Text('Erro: ${serviceSnapshot.error}'));
                                 } else if (!serviceSnapshot.hasData ||
                                     serviceSnapshot.data!.isEmpty) {
-                                  return Center(child: Text('No services found'));
+                                  return Center(child: Text('Não há serviços'));
                                 } else {
                                   return ListView.builder(
                                     itemCount: serviceSnapshot.data!.length,
@@ -148,7 +177,31 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     )
                   else
-                    Text('No mechanic registered'),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Nenhum mecânico registrado'),
+                          SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MechanicForm(userId: widget.user.id!),
+                                ),
+                              );
+                              if (result == true) {
+                                setState(() {
+                                  _loadUserMechanic();
+                                });
+                              }
+                            },
+                            child: Text('Criar perfil de mecânico'),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),

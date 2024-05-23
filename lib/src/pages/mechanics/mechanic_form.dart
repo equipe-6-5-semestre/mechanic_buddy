@@ -55,7 +55,7 @@ class _MechanicFormState extends State<MechanicForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.mechanic == null ? 'Add Mechanic' : 'Edit Mechanic'),
+        title: Text(widget.mechanic == null ? 'Cadastrar Mecânico' : 'Atualizar Mecânico'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -65,10 +65,10 @@ class _MechanicFormState extends State<MechanicForm> {
             children: [
               TextFormField(
                 initialValue: _name,
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(labelText: 'Nome'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter name';
+                    return 'Por favor, insira seu nome';
                   }
                   return null;
                 },
@@ -78,10 +78,10 @@ class _MechanicFormState extends State<MechanicForm> {
               ),
               TextFormField(
                 initialValue: _phone,
-                decoration: InputDecoration(labelText: 'Phone'),
+                decoration: InputDecoration(labelText: 'Telefone'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter phone';
+                    return 'Por favor, insira seu telefone';
                   }
                   return null;
                 },
@@ -91,10 +91,10 @@ class _MechanicFormState extends State<MechanicForm> {
               ),
               TextFormField(
                 initialValue: _specialization,
-                decoration: InputDecoration(labelText: 'Specialization'),
+                decoration: InputDecoration(labelText: 'Especialização'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter specialization';
+                    return 'Por favor, insira sua especialização';
                   }
                   return null;
                 },
@@ -103,7 +103,7 @@ class _MechanicFormState extends State<MechanicForm> {
                 },
               ),
               Text(
-                'Vehicle Types',
+                'Selecione os tipos de veículos:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               ..._allVehicleTypes.map((type) {
@@ -123,11 +123,11 @@ class _MechanicFormState extends State<MechanicForm> {
               }).toList(),
               TextFormField(
                 initialValue: _experience.toString(),
-                decoration: InputDecoration(labelText: 'Experience (Years)'),
+                decoration: InputDecoration(labelText: 'Anos de Experiência'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter experience';
+                    return 'Por favor, insira sua experiencia';
                   }
                   return null;
                 },
@@ -137,10 +137,10 @@ class _MechanicFormState extends State<MechanicForm> {
               ),
               TextFormField(
                 initialValue: _city,
-                decoration: InputDecoration(labelText: 'City'),
+                decoration: InputDecoration(labelText: 'Cidade'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter city';
+                    return 'Por favor, insira sua cidade';
                   }
                   return null;
                 },
@@ -182,7 +182,7 @@ class _MechanicFormState extends State<MechanicForm> {
                     Navigator.pop(context, true);
                   }
                 },
-                child: Text(widget.mechanic == null ? 'Add' : 'Update'),
+                child: Text(widget.mechanic == null ? 'Cadastrar' : 'Atualizar'),
               ),
             ],
           ),

@@ -30,7 +30,7 @@ class _MechanicDetailsPageState extends State<MechanicDetailsPage> {
       await launch(url);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not launch WhatsApp')),
+        SnackBar(content: Text('Não foi possivel abrir o WhatsApp')),
       );
     }
   }
@@ -47,19 +47,19 @@ class _MechanicDetailsPageState extends State<MechanicDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Mechanic Information',
+              'Informacões do Mecânico',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-            Text('Name: ${widget.mechanic.name}'),
-            Text('Phone: ${widget.mechanic.phone}'),
-            Text('Specialization: ${widget.mechanic.specialization}'),
-            Text('Vehicle Types: ${widget.mechanic.vehicleTypes.join(', ')}'),
-            Text('Experience: ${widget.mechanic.experience} years'),
-            Text('City: ${widget.mechanic.city}'),
+            Text('Nome: ${widget.mechanic.name}'),
+            Text('Telefone: ${widget.mechanic.phone}'),
+            Text('Especialização: ${widget.mechanic.specialization}'),
+            Text('Tipos de veículos: ${widget.mechanic.vehicleTypes.join(', ')}'),
+            Text('Experiência: ${widget.mechanic.experience} years'),
+            Text('Cidade: ${widget.mechanic.city}'),
             SizedBox(height: 20),
             Text(
-              'Services Offered',
+              'Serviços Oferecidos',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
@@ -72,7 +72,7 @@ class _MechanicDetailsPageState extends State<MechanicDetailsPage> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No services found'));
+                    return Center(child: Text('Nenhum serviço encontrado'));
                   } else {
                     return ListView.builder(
                       itemCount: snapshot.data!.length,

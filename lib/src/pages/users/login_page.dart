@@ -35,21 +35,21 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               TextFormField(
                 controller: _usernameController,
-                decoration: InputDecoration(labelText: 'Username'),
+                decoration: InputDecoration(labelText: 'Usuário'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
+                    return 'Por favor, insira seu nome de usuário';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(labelText: 'Senha'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
+                    return 'Por favor, insira sua senha';
                   }
                   return null;
                 },
@@ -68,19 +68,19 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Invalid username or password')),
+                        SnackBar(content: Text('Usuário ou senha inválidos.')),
                       );
                     }
                   }
                 },
-                child: Text('Login'),
+                child: Text('Entrar'),
               ),
               SizedBox(height: 10),
               TextButton(
                 onPressed: () {
                   _showRegisterDialog(context);
                 },
-                child: Text('Register'),
+                child: Text('Criar conta'),
               ),
             ],
           ),
@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
         final _registerPasswordController = TextEditingController();
 
         return AlertDialog(
-          title: Text('Register'),
+          title: Text('Cadastro'),
           content: Form(
             key: _registerFormKey,
             child: Column(
@@ -106,21 +106,21 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 TextFormField(
                   controller: _registerUsernameController,
-                  decoration: InputDecoration(labelText: 'Username'),
+                  decoration: InputDecoration(labelText: 'Nome de Usuário'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
+                      return 'Por favor, insira seu nome de usuário';
                     }
                     return null;
                   },
                 ),
                 TextFormField(
                   controller: _registerPasswordController,
-                  decoration: InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(labelText: 'Senha'),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return 'Por favor, insira sua senha';
                     }
                     return null;
                   },
@@ -131,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
+              child: Text('Cancelar'),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -141,11 +141,11 @@ class _LoginPageState extends State<LoginPage> {
                   await _dbHelper.insertUser(User(username: username, password: password));
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('User registered successfully')),
+                    SnackBar(content: Text('Conta criada com sucesso.')),
                   );
                 }
               },
-              child: Text('Register'),
+              child: Text('Cadastrar'),
             ),
           ],
         );

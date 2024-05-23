@@ -38,9 +38,9 @@ class Mechanic {
       name: map['name'],
       phone: map['phone'],
       specialization: map['specialization'],
-      vehicleTypes: map['vehicle_types'].split(','), // Convert back to List<String>
-      experience: map['experience'],
-      city: map['city'],
+      vehicleTypes: map['vehicle_types']?.split(',') ?? [], // Convert back to List<String>
+      experience: map['experience'] ?? 0,
+      city: map['city'] ?? '',
       userId: map['user_id'],
     );
   }
