@@ -24,13 +24,16 @@ class _MechanicDetailsPageState extends State<MechanicDetailsPage> {
     _serviceList = _dbHelper.getServices(widget.mechanic.id!);
   }
 
-  void _launchWhatsApp(String phone) async {
-    final url = 'https://wa.me/$phone';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
+ void _launchWhatsApp(String phone) async {
+    // Remover espaços e caracteres especiais do telefone
+    final cleanedPhone = phone.replaceAll(RegExp(r'[^0-9]'), '');
+    final Uri url = Uri.parse('https://wa.me/$cleanedPhone');
+    
+    try {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Não foi possivel abrir o WhatsApp')),
+        SnackBar(content: Text('Não foi possível abrir o WhatsApp. Verifique se está instalado.')),
       );
     }
   }

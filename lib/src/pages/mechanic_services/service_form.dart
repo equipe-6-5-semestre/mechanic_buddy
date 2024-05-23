@@ -31,7 +31,7 @@ class _ServiceFormState extends State<ServiceForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Service'),
+        title: Text('Cadastrar Serviço'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -40,10 +40,10 @@ class _ServiceFormState extends State<ServiceForm> {
           child: Column(
             children: [
               TextFormField(
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(labelText: 'Nome'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter service name';
+                    return 'Por favor, insira seu nome';
                   }
                   return null;
                 },
@@ -52,10 +52,10 @@ class _ServiceFormState extends State<ServiceForm> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(labelText: 'Descrição'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter service description';
+                    return 'Por favor, insira uma descrição';
                   }
                   return null;
                 },
@@ -64,11 +64,11 @@ class _ServiceFormState extends State<ServiceForm> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Price'),
+                decoration: InputDecoration(labelText: 'Preço'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter service price';
+                    return 'Por favor, insira um preço';
                   }
                   return null;
                 },
@@ -92,7 +92,7 @@ class _ServiceFormState extends State<ServiceForm> {
                     Navigator.pop(context, true);
                   }
                 },
-                child: Text('Add'),
+                child: Text('Cadastrar'),
               ),
             ],
           ),
